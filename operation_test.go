@@ -116,32 +116,13 @@ func Test_GetLastRecord(t *testing.T) {
 			in: Input{
 				Operation: ADD,
 				Number:    1,
+				Offset:    0,
 			},
 			want: []Input{
 				{
 					Operation: "add",
 					Number:    1,
-					Offset:    0,
-				},
-			},
-			initial: []Input{},
-		},
-		{
-			desc: "happy case multi exist",
-			in: Input{
-				Operation: SUBSTRACT,
-				Number:    12,
-			},
-			want: []Input{
-				{
-					Operation: "add",
-					Number:    1,
-					Offset:    0,
-				},
-				{
-					Operation: "subtract",
-					Number:    12,
-					Offset:    1,
+					Offset:    2,
 				},
 			},
 			initial: []Input{
@@ -150,16 +131,100 @@ func Test_GetLastRecord(t *testing.T) {
 					Number:    1,
 					Offset:    0,
 				},
+				{
+					Operation: ADD,
+					Number:    1,
+					Offset:    1,
+				},
+				{
+					Operation: ADD,
+					Number:    1,
+					Offset:    2,
+				},
+			},
+		},
+		{
+			desc: "happy case offset",
+			in: Input{
+				Operation: ADD,
+				Number:    1,
+				Offset:    1,
+			},
+			want: []Input{
+				{
+					Operation: "add",
+					Number:    1,
+					Offset:    0,
+				},
+			},
+			initial: []Input{
+				{
+					Operation: ADD,
+					Number:    1,
+					Offset:    0,
+				},
+				{
+					Operation: ADD,
+					Number:    1,
+					Offset:    1,
+				},
+				{
+					Operation: ADD,
+					Number:    1,
+					Offset:    2,
+				},
+			},
+		},
+		{
+			desc: "happy case large number",
+			in: Input{
+				Operation: ADD,
+				Number:    1000,
+				Offset:    0,
+			},
+			want: []Input{
+				{
+					Operation: "add",
+					Number:    1,
+					Offset:    0,
+				},
+				{
+					Operation: "add",
+					Number:    1,
+					Offset:    1,
+				},
+				{
+					Operation: "add",
+					Number:    1,
+					Offset:    2,
+				},
+			},
+			initial: []Input{
+				{
+					Operation: ADD,
+					Number:    1,
+					Offset:    0,
+				},
+				{
+					Operation: ADD,
+					Number:    1,
+					Offset:    1,
+				},
+				{
+					Operation: ADD,
+					Number:    1,
+					Offset:    2,
+				},
 			},
 		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			ohimpl := &OperationHistoryImpl{inArr: tC.initial}
-			ohimpl.Store(tC.in)
+			arr := ohimpl.GetLastRecord(tC.in.Number, tC.in.Offset)
 
 			// assert
-			assert.Equal(t, tC.want, ohimpl.inArr)
+			assert.Equal(t, tC.want, arr)
 		})
 	}
 }
