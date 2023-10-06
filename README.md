@@ -7,6 +7,8 @@
 
 ---
 
+![alt sample_gif](.github/asset/sample.gif)
+
 <p align="center"> Simple calculator CLI with basic capabilities.
     <br> 
 </p>
