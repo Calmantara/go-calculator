@@ -17,11 +17,8 @@
 
 - [About](#about)
 - [Getting Started](#getting_started)
-- [Deployment](#deployment)
 - [Usage](#usage)
 - [Built Using](#built_using)
-- [TODO](../TODO.md)
-- [Contributing](../CONTRIBUTING.md)
 - [Authors](#authors)
 - [Acknowledgments](#acknowledgement)
 
@@ -47,53 +44,92 @@ All commands / operations is case insensitive, and invalid operations would not 
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+To run this project, you need to install Golang in your machine
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running.
-
-Say what the step will be
+To setup all package needed, run the command below
 
 ```
-Give the example
+make setup
+make init
 ```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo.
 
 ## 🔧 Running the tests <a name = "tests"></a>
 
-Explain how to run the automated tests for this system.
 
 ### Break down into end to end tests
 
-Explain what these tests test and why
-
+To run all unit tests, just run the command below
 ```
-Give an example
+make test
 ```
 
 ### And coding style tests
 
-Explain what these tests test and why
+if you wanna add more operations in this code. 
+just implement the Operation interface
 
 ```
-Give an example
+type Operation interface {
+		Do(in Input)
+}
 ```
-
+and add the implementation for the new operation
+```
+ops := map[OperationType]Operation{
+  . . .
+  DIVIDE:    NewDivide(state),
+  CANCEL:    NewCancel(state),
+  . . .
+}
+```
+to add more mocking for testing, register your file contained interface in Makefile
+```
+. . .
+mock:
+	mockgen -source=operation.go -destination=operation_mock.go -package=main
+. . .
+```
 ## 🎈 Usage <a name="usage"></a>
 
-Add notes about how to use the system.
+To use this calculator, you can run it directly through code file
+```
+make run
+```
+or, you can run thru built session .
+
+Then, just playing around with the commands
+
+```
+ADD       OperationType = "add"
+SUBSTRACT OperationType = "subtract"
+MULTIPLY  OperationType = "multiply"
+DIVIDE    OperationType = "divide"
+CANCEL    OperationType = "cancel"
+ABS       OperationType = "abs"
+NEG       OperationType = "neg"
+SQRT      OperationType = "sqrt"
+SQR       OperationType = "sqr"
+CUBERT    OperationType = "cubert"
+CUBE      OperationType = "cube"
+EXIT      OperationType = "exit"
+REPEAT    OperationType = "repeat"
+```
+To exit your calculator, type in *exit* in your running CLI.
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 
 - [Golang](https://go.dev/) - Main Programming Language
+
+to build this program into binary file, run the command below
+```
+make build
+```
+to execute the binary file, run the command below
+```
+make exec
+```
 
 ## ✍️ Authors <a name = "authors"></a>
 
