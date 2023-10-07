@@ -45,11 +45,36 @@ func Test_Add_Do(t *testing.T) {
 			initial: &State{Number: 100},
 			input:   Input{Operation: ADD, Number: 5},
 		},
+		{
+			desc:    "happy case inf positif",
+			want:    &State{Number: math.Inf(1)},
+			initial: &State{Number: 100},
+			input:   Input{Operation: ADD, Number: math.Inf(1)},
+		},
+		{
+			desc:    "happy case inf negative",
+			want:    &State{Number: math.Inf(-1)},
+			initial: &State{Number: 100},
+			input:   Input{Operation: ADD, Number: math.Inf(-1)},
+		},
+		{
+			desc:    "happy case inf add",
+			want:    &State{Number: math.NaN()},
+			initial: &State{Number: math.Inf(1)},
+			input:   Input{Operation: ADD, Number: math.Inf(-1)},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			op := &AddOps{state: tC.initial}
 			op.Do(tC.input)
+
+			if math.IsNaN(tC.want.Number) {
+				if !math.IsNaN(op.state.Number) {
+					t.Error("not NaN")
+				}
+				return
+			}
 
 			assert.Equal(t, tC.want, tC.initial)
 		})
@@ -94,11 +119,42 @@ func Test_Subtract_Do(t *testing.T) {
 			initial: &State{Number: 100},
 			input:   Input{Operation: SUBSTRACT, Number: 5},
 		},
+		{
+			desc:    "happy case inf positif",
+			want:    &State{Number: math.Inf(-1)},
+			initial: &State{Number: 100},
+			input:   Input{Operation: SUBSTRACT, Number: math.Inf(1)},
+		},
+		{
+			desc:    "happy case inf negative",
+			want:    &State{Number: math.Inf(1)},
+			initial: &State{Number: 100},
+			input:   Input{Operation: SUBSTRACT, Number: math.Inf(-1)},
+		},
+		{
+			desc:    "happy case inf add",
+			want:    &State{Number: math.NaN()},
+			initial: &State{Number: math.Inf(1)},
+			input:   Input{Operation: SUBSTRACT, Number: math.Inf(1)},
+		},
+		{
+			desc:    "happy case inf add positive",
+			want:    &State{Number: math.Inf(1)},
+			initial: &State{Number: math.Inf(1)},
+			input:   Input{Operation: SUBSTRACT, Number: math.Inf(-1)},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			op := &SubstractOps{state: tC.initial}
 			op.Do(tC.input)
+
+			if math.IsNaN(tC.want.Number) {
+				if !math.IsNaN(op.state.Number) {
+					t.Errorf("not NaN: %v", op.state.Number)
+				}
+				return
+			}
 
 			assert.Equal(t, tC.want, tC.initial)
 		})
