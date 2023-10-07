@@ -4,26 +4,40 @@ import "os"
 
 type (
 	// basic operation implementation
+
+	// addition basic ops
+	// the operation implemented is state + n
 	AddOps struct {
 		state *State
 	}
 
+	// subtract basic ops
+	// the operation implemented is state - n
 	SubstractOps struct {
 		state *State
 	}
 
+	// multiply basic ops
+	// the operation implemented is state * n
 	MultiplyOps struct {
 		state *State
 	}
 
+	// divide basic ops
+	// the operation implemented is state / n
+	// would be return Inf if divided by 0
 	DivideOps struct {
 		state *State
 	}
 
+	// cancel basic ops
+	// the operation implemented is
+	// forcing state number to be 0
 	CancelOps struct {
 		state *State
 	}
 
+	// exit operation to exit the program
 	ExitOps struct{}
 )
 

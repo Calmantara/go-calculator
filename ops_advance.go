@@ -4,30 +4,53 @@ import "math"
 
 type (
 	// advance operation
+
+	// absolute operation
+	// would be changed
+	// negative number into positive
+	// included Inf number
 	AbsOps struct {
 		state *State
 	}
 
+	// negation operation
+	// would be change
+	// positive number into negative one
+	// vice versa
 	NegOps struct {
 		state *State
 	}
 
+	// square root operation
+	// would be return NaN
+	// if state number is negative
 	SqrtOps struct {
 		state *State
 	}
 
+	// square function
+	// to operate
+	// state number * state number
 	SqrOps struct {
 		state *State
 	}
 
+	// cube root to operate
+	// cube root of state number
 	CubertOps struct {
 		state *State
 	}
 
+	// cube opration for
+	// state number
 	CubeOps struct {
 		state *State
 	}
 
+	// this operation would be
+	// replay all event recorded in history
+	// and recursively operate if any repeat in
+	// recorded history
 	RepeatOps struct {
 		ops        map[OperationType]Operation
 		opsHistory OperationHistory

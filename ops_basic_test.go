@@ -58,6 +58,30 @@ func Test_Add_Do(t *testing.T) {
 			input:   Input{Operation: ADD, Number: math.Inf(-1)},
 		},
 		{
+			desc:    "happy case inf positif initial",
+			want:    &State{Number: math.Inf(1)},
+			initial: &State{Number: math.Inf(1)},
+			input:   Input{Operation: ADD, Number: 100},
+		},
+		{
+			desc:    "happy case inf negative initial",
+			want:    &State{Number: math.Inf(-1)},
+			initial: &State{Number: math.Inf(-1)},
+			input:   Input{Operation: ADD, Number: 100},
+		},
+		{
+			desc:    "happy case nan initial",
+			want:    &State{Number: math.NaN()},
+			initial: &State{Number: math.NaN()},
+			input:   Input{Operation: ADD, Number: 100},
+		},
+		{
+			desc:    "happy case nan initial negative",
+			want:    &State{Number: math.NaN()},
+			initial: &State{Number: math.NaN()},
+			input:   Input{Operation: ADD, Number: -100},
+		},
+		{
 			desc:    "happy case inf add",
 			want:    &State{Number: math.NaN()},
 			initial: &State{Number: math.Inf(1)},
@@ -143,6 +167,30 @@ func Test_Subtract_Do(t *testing.T) {
 			initial: &State{Number: math.Inf(1)},
 			input:   Input{Operation: SUBSTRACT, Number: math.Inf(-1)},
 		},
+		{
+			desc:    "happy case inf positif initial",
+			want:    &State{Number: math.Inf(1)},
+			initial: &State{Number: math.Inf(1)},
+			input:   Input{Operation: SUBSTRACT, Number: 100},
+		},
+		{
+			desc:    "happy case inf negative initial",
+			want:    &State{Number: math.Inf(-1)},
+			initial: &State{Number: math.Inf(-1)},
+			input:   Input{Operation: SUBSTRACT, Number: 100},
+		},
+		{
+			desc:    "happy case nan initial",
+			want:    &State{Number: math.NaN()},
+			initial: &State{Number: math.NaN()},
+			input:   Input{Operation: SUBSTRACT, Number: 100},
+		},
+		{
+			desc:    "happy case nan initial negative",
+			want:    &State{Number: math.NaN()},
+			initial: &State{Number: math.NaN()},
+			input:   Input{Operation: SUBSTRACT, Number: -100},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
@@ -216,6 +264,30 @@ func Test_Multiply_Do(t *testing.T) {
 			want:    &State{Number: math.NaN()},
 			initial: &State{Number: math.Inf(1)},
 			input:   Input{Operation: MULTIPLY, Number: 0},
+		},
+		{
+			desc:    "happy case inf positif initial",
+			want:    &State{Number: math.Inf(1)},
+			initial: &State{Number: math.Inf(1)},
+			input:   Input{Operation: MULTIPLY, Number: 100},
+		},
+		{
+			desc:    "happy case inf negative initial",
+			want:    &State{Number: math.Inf(-1)},
+			initial: &State{Number: math.Inf(-1)},
+			input:   Input{Operation: MULTIPLY, Number: 100},
+		},
+		{
+			desc:    "happy case nan initial",
+			want:    &State{Number: math.NaN()},
+			initial: &State{Number: math.NaN()},
+			input:   Input{Operation: MULTIPLY, Number: 100},
+		},
+		{
+			desc:    "happy case nan initial negative",
+			want:    &State{Number: math.NaN()},
+			initial: &State{Number: math.NaN()},
+			input:   Input{Operation: MULTIPLY, Number: -100},
 		},
 	}
 	for _, tC := range testCases {
@@ -296,11 +368,42 @@ func Test_Divide_Do(t *testing.T) {
 			initial: &State{Number: 1},
 			input:   Input{Operation: DIVIDE, Number: math.Inf(1)},
 		},
+		{
+			desc:    "happy case inf positif initial",
+			want:    &State{Number: math.Inf(1)},
+			initial: &State{Number: math.Inf(1)},
+			input:   Input{Operation: DIVIDE, Number: 100},
+		},
+		{
+			desc:    "happy case inf negative initial",
+			want:    &State{Number: math.Inf(-1)},
+			initial: &State{Number: math.Inf(-1)},
+			input:   Input{Operation: DIVIDE, Number: 100},
+		},
+		{
+			desc:    "happy case nan initial",
+			want:    &State{Number: math.NaN()},
+			initial: &State{Number: math.NaN()},
+			input:   Input{Operation: DIVIDE, Number: 100},
+		},
+		{
+			desc:    "happy case nan initial negative",
+			want:    &State{Number: math.NaN()},
+			initial: &State{Number: math.NaN()},
+			input:   Input{Operation: DIVIDE, Number: -100},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			op := &DivideOps{state: tC.initial}
 			op.Do(tC.input)
+
+			if math.IsNaN(tC.want.Number) {
+				if !math.IsNaN(tC.initial.Number) {
+					t.Error("not NaN")
+				}
+				return
+			}
 
 			assert.Equal(t, tC.want, tC.initial)
 		})
@@ -343,6 +446,12 @@ func Test_Cancel_Do(t *testing.T) {
 			desc:    "happy case",
 			want:    &State{Number: 0},
 			initial: &State{Number: 100},
+			input:   Input{Operation: CANCEL},
+		},
+		{
+			desc:    "happy case negative",
+			want:    &State{Number: 0},
+			initial: &State{Number: -100},
 			input:   Input{Operation: CANCEL},
 		},
 		{

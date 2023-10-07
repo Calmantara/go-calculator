@@ -65,7 +65,7 @@ func Test_Abs_Do(t *testing.T) {
 			op.Do(tC.input)
 
 			if math.IsNaN(tC.want.Number) {
-				if !math.IsNaN(op.state.Number) {
+				if !math.IsNaN(tC.initial.Number) {
 					t.Error("not NaN")
 				}
 				return
@@ -146,7 +146,7 @@ func Test_Neg_Do(t *testing.T) {
 			op.Do(tC.input)
 
 			if math.IsNaN(tC.want.Number) {
-				if !math.IsNaN(op.state.Number) {
+				if !math.IsNaN(tC.initial.Number) {
 					t.Error("not NaN")
 				}
 				return
@@ -221,7 +221,7 @@ func Test_Sqrt_Do(t *testing.T) {
 			op.Do(tC.input)
 
 			if math.IsNaN(tC.want.Number) {
-				if !math.IsNaN(op.state.Number) {
+				if !math.IsNaN(tC.initial.Number) {
 					t.Error("not NaN")
 				}
 				return
@@ -302,7 +302,7 @@ func Test_Sqr_Do(t *testing.T) {
 			op.Do(tC.input)
 
 			if math.IsNaN(tC.want.Number) {
-				if !math.IsNaN(op.state.Number) {
+				if !math.IsNaN(tC.initial.Number) {
 					t.Error("not NaN")
 				}
 				return
@@ -383,7 +383,7 @@ func Test_Cubert_Do(t *testing.T) {
 			op.Do(tC.input)
 
 			if math.IsNaN(tC.want.Number) {
-				if !math.IsNaN(op.state.Number) {
+				if !math.IsNaN(tC.initial.Number) {
 					t.Error("not NaN")
 				}
 				return
@@ -464,7 +464,7 @@ func Test_Cube_Do(t *testing.T) {
 			op.Do(tC.input)
 
 			if math.IsNaN(tC.want.Number) {
-				if !math.IsNaN(op.state.Number) {
+				if !math.IsNaN(tC.initial.Number) {
 					t.Error("not NaN")
 				}
 				return

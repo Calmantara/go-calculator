@@ -18,6 +18,10 @@ const (
 	REPEAT    OperationType = "repeat"
 )
 
+// operation custom type
+// so it would be more
+// readable if you want
+// to add more operations
 type OperationType string
 
 func (o OperationType) String() string {
@@ -26,27 +30,53 @@ func (o OperationType) String() string {
 
 // define model and interface
 type (
+
+	// generic oeparion interface
+	// use and / or composite this interface
+	// to make new operation implementation
+	// for this calculator
 	Operation interface {
 		Do(in Input)
 	}
 
+	// Operation history interface
+	// to store and get last n record
+	// this should be imutable record of event
+	// in the implementation side
 	OperationHistory interface {
 		Store(in Input)
 		GetLastRecord(n float64, offset int) []Input
 	}
-	// model
+
+	// operation history model
+	// implementation for event store
+	// for all user input
+	// would be appended only if
+	// input is valid with predefined
+	// operation types
 	OperationHistoryImpl struct {
 		inArr []Input
 	}
 
+	// state number or latest number
+	// of calculator from all inputs
 	State struct {
 		Number float64
 	}
 
+	// input model that represent user input
 	Input struct {
+		// operation name filled
+		// by user, predefined in constant
 		Operation OperationType
-		Number    float64
-		Offset    int
+
+		// input number from user
+		// would be input n
+		// from the operations function
+		Number float64
+
+		// index of recorded event
+		Offset int
 	}
 )
 
