@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 )
 
 func Test_NewAbs(t *testing.T) {
@@ -507,6 +508,128 @@ func Test_NewRepeat(t *testing.T) {
 			op := NewRepeat(tC.input.state, tC.input.opsHistory, tC.input.ops)
 
 			assert.Equal(t, tC.want, op)
+		})
+	}
+}
+
+func Test_Repeat_Do(t *testing.T) {
+	type initial struct {
+		state *State
+		ops   map[OperationType]Operation
+	}
+
+	testCases := []struct {
+		desc    string
+		want    *State
+		doMock  func(opsHistory *MockOperationHistory, ops *MockOperation)
+		initial initial
+		input   Input
+	}{
+		{
+			desc: "happy case",
+			want: &State{Number: 3},
+			doMock: func(opsHistory *MockOperationHistory, ops *MockOperation) {
+				opsHistory.EXPECT().GetLastRecord(gomock.Eq(float64(1)), gomock.Eq(0)).AnyTimes().MinTimes(1).Return(
+					[]Input{
+						{Operation: ADD, Number: 1, Offset: 0},
+					},
+				)
+			},
+			initial: initial{
+				state: &State{Number: 2},
+				ops:   map[OperationType]Operation{},
+			},
+			input: Input{Operation: REPEAT, Number: 1, Offset: 0},
+		},
+		{
+			desc: "happy case repeat 4",
+			want: &State{Number: 6},
+			doMock: func(opsHistory *MockOperationHistory, ops *MockOperation) {
+				opsHistory.EXPECT().GetLastRecord(gomock.Eq(float64(4)), gomock.Eq(0)).AnyTimes().MinTimes(1).Return(
+					[]Input{
+						{Operation: ADD, Number: 1, Offset: 0},
+						{Operation: ADD, Number: 1, Offset: 1},
+						{Operation: ADD, Number: 1, Offset: 2},
+						{Operation: ADD, Number: 1, Offset: 3},
+					},
+				)
+			},
+			initial: initial{
+				state: &State{Number: 2},
+				ops:   map[OperationType]Operation{},
+			},
+			input: Input{Operation: REPEAT, Number: 4, Offset: 0},
+		},
+		{
+			desc: "happy case repeat on offset 0",
+			want: &State{Number: 3},
+			doMock: func(opsHistory *MockOperationHistory, ops *MockOperation) {
+				opsHistory.EXPECT().GetLastRecord(gomock.Eq(float64(100)), gomock.Eq(0)).AnyTimes().MinTimes(1).Return(
+					[]Input{
+						{Operation: REPEAT, Number: 1, Offset: 0},
+						{Operation: ADD, Number: 1, Offset: 1},
+					},
+				)
+			},
+			initial: initial{
+				state: &State{Number: 2},
+				ops:   map[OperationType]Operation{},
+			},
+			input: Input{Operation: REPEAT, Number: 100, Offset: 0},
+		},
+		{
+			desc: "happy case repeat on offset 0 with 2 repeat",
+			want: &State{Number: 3},
+			doMock: func(opsHistory *MockOperationHistory, ops *MockOperation) {
+				opsHistory.EXPECT().GetLastRecord(gomock.Eq(float64(100)), gomock.Eq(0)).AnyTimes().MinTimes(1).Return(
+					[]Input{
+						{Operation: REPEAT, Number: 1, Offset: 0},
+						{Operation: REPEAT, Number: 1, Offset: 1},
+						{Operation: ADD, Number: 1, Offset: 2},
+					},
+				)
+				// second call
+				opsHistory.EXPECT().GetLastRecord(gomock.Eq(float64(1)), gomock.Eq(1)).AnyTimes().MinTimes(1).Return(
+					[]Input{
+						{Operation: REPEAT, Number: 1, Offset: 0},
+					},
+				)
+			},
+			initial: initial{
+				state: &State{Number: 2},
+				ops:   map[OperationType]Operation{},
+			},
+			input: Input{Operation: REPEAT, Number: 100, Offset: 0},
+		},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			// do mock
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			opsHistory := NewMockOperationHistory(ctrl)
+			ops := NewMockOperation(ctrl)
+
+			// add ops to map of ops
+			tC.initial.ops[ADD] = NewAdd(tC.initial.state)
+			op := &RepeatOps{
+				state:      tC.initial.state,
+				opsHistory: opsHistory,
+				ops:        tC.initial.ops}
+			tC.initial.ops[REPEAT] = op
+
+			// do mock and exec function
+			tC.doMock(opsHistory, ops)
+			op.Do(tC.input)
+
+			if math.IsNaN(tC.want.Number) {
+				if !math.IsNaN(tC.initial.state.Number) {
+					t.Error("not NaN")
+				}
+				return
+			}
+
+			assert.Equal(t, tC.want, tC.initial.state)
 		})
 	}
 }
